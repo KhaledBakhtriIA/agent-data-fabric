@@ -1,0 +1,20 @@
+{
+  "name": "qa-fabric",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "ingest": "ts-node scripts/ingest.ts",
+    "evidence:stats": "ts-node scripts/stats.ts"
+  },
+  "dependencies": {
+    "sql.js": "^1.10.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.45.0",
+    "@types/node": "^20.0.0",
+    "@types/sql.js": "^1.4.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

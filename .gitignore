@@ -1,0 +1,9 @@
+node_modules/
+dist/
+
+# Evidence database is local — schema.sql is versioned instead
+evidence/qa-evidence.db
+
+# Playwright output (regenerated each run)
+test-results/
+playwright-report/
