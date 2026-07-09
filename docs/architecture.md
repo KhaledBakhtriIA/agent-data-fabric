@@ -10,7 +10,8 @@ result file (any framework)
   adapters/            can_parse() detects the format; parse() → neutral Run
       │                (playwright implemented; junit, pytest stubbed)
       ▼
-  storage/             models.py = neutral dataclasses (Run, TestResult)
+  storage/      
+         models.py = neutral dataclasses (Run, TestResult)
       │                database.py = local SQLite; stable run_id → idempotent
       ▼
   analysis/            statistics only, no AI:

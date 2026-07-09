@@ -14,8 +14,8 @@ license = { file = "LICENSE" }
 dependencies = []
 
 [project.optional-dependencies]
-# For running the tool's own tests. Not needed to use the tool.
-dev = ["pytest>=7"]
+# Tooling for contributors. None of this is needed to *run* the tool.
+dev = ["pytest>=7", "ruff>=0.5", "pyright>=1.1"]
 
 [project.scripts]
 # Installs a `reliability` command that calls reliability.cli:main
@@ -34,6 +34,25 @@ packages = [
 [tool.setuptools.package-data]
 # The schema is loaded at runtime, so ship it inside the package.
 "reliability.storage" = ["schema.sql"]
+# PEP 561 marker: advertise that this package ships inline type information.
+"reliability" = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Make `reliability` importable when running `pytest` from the repo root
+# without requiring an editable install first.
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+# pycodestyle (E), pyflakes (F), isort (I), pyupgrade (UP), bugbear (B).
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pyright]
+# The whole package is kept strict-clean; CI and editors should enforce that.
+include = ["reliability", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.9"
