@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass, field
-from typing import List
 
 from ..storage.models import PASSED
 
@@ -27,7 +26,7 @@ class RunPoint:
 
 @dataclass
 class TrendReport:
-    points: List[RunPoint] = field(default_factory=list)
+    points: list[RunPoint] = field(default_factory=list[RunPoint])
     earlier_avg: float = 0.0
     recent_avg: float = 0.0
 

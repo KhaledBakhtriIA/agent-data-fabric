@@ -7,7 +7,6 @@ The registry order matters only for detection: the first adapter whose
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Optional
 
 from .base import Adapter
 from .junit import JUnitAdapter
@@ -15,7 +14,7 @@ from .playwright import PlaywrightAdapter
 from .pytest import PytestJsonAdapter
 
 # Instantiated once; adapters are stateless.
-ADAPTERS: List[Adapter] = [
+ADAPTERS: list[Adapter] = [
     PlaywrightAdapter(),
     PytestJsonAdapter(),
     JUnitAdapter(),
@@ -34,7 +33,7 @@ def get_adapter(name: str) -> Adapter:
     raise ValueError(f"Unknown framework '{name}'. Known adapters: {known}")
 
 
-def detect_adapter(path: Path) -> Optional[Adapter]:
+def detect_adapter(path: Path) -> Adapter | None:
     """Return the adapter that recognises ``path``, or None if none do."""
     with path.open("r", encoding="utf-8", errors="replace") as fh:
         sample = fh.read(_SAMPLE_BYTES)

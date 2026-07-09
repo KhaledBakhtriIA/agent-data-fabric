@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass, field
-from typing import List
 
 from ..storage.models import FAILED, FLAKY, PASSED, SKIPPED
 
@@ -40,7 +39,7 @@ class TestReliability:
 
 @dataclass
 class ReliabilityReport:
-    tests: List[TestReliability] = field(default_factory=list)
+    tests: list[TestReliability] = field(default_factory=list[TestReliability])
 
     @property
     def suite_score(self) -> float:

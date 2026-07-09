@@ -1,5 +1,4 @@
 """End-to-end tests for the reliability tool, using the fixture reports.
-
 Deterministic and framework-runner-free: parse fixture reports → store →
 analyse, and assert the numbers. This is the tool testing itself.
 """

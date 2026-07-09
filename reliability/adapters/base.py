@@ -12,9 +12,6 @@ from pathlib import Path
 
 from ..storage.models import Run
 
-# Re-exported so adapters can do ``from .base import Adapter, truncate``.
-from ..utils.text import truncate  # noqa: F401
-
 
 class Adapter(ABC):
     #: short framework identifier, stored on every run (e.g. "playwright")

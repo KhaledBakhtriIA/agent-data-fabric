@@ -11,7 +11,6 @@ import hashlib
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 from .models import Run
 
@@ -56,7 +55,7 @@ def run_exists(conn: sqlite3.Connection, run_id: str) -> bool:
     return row is not None
 
 
-def insert_run(conn: sqlite3.Connection, run: Run, run_id: Optional[str] = None) -> str:
+def insert_run(conn: sqlite3.Connection, run: Run, run_id: str | None = None) -> str:
     """Persist a run and all its test results in a single transaction.
 
     Returns the run_id. Callers should check :func:`run_exists` first if they

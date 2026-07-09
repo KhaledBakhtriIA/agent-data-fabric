@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
-from typing import List
 
 from ..storage.models import FAILED, FLAKY, PASSED, SKIPPED
 
@@ -45,7 +44,7 @@ class FlakyTest:
         return self.bad / self.runs if self.runs else 0.0
 
 
-def analyse_flakiness(conn: sqlite3.Connection, min_runs: int = 2) -> List[FlakyTest]:
+def analyse_flakiness(conn: sqlite3.Connection, min_runs: int = 2) -> list[FlakyTest]:
     """Return unstable tests, most-unstable first.
 
     ``min_runs`` guards against calling a test flaky on a single data point —

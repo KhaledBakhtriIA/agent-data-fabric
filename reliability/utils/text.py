@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Optional
 
-
-def truncate(message: Optional[str], limit: int = 500) -> Optional[str]:
+def truncate(message: str | None, limit: int = 500) -> str | None:
     """Keep stored error messages short; full detail stays in the source file.
 
     We never want to bloat the history DB (or accidentally store secrets echoed
