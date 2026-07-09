@@ -209,12 +209,34 @@ tests, never deploys, and never acts autonomously.
 ## Development
 
 ```bash
-pip install -e ".[dev]"   # installs pytest
+pip install -e ".[dev]"   # installs pytest, ruff and pyright
 pytest                    # runs the tool's own tests (browser-free, deterministic)
+ruff check .              # lint
+pyright                   # strict type check
 ```
 
 The test suite parses the fixtures in `tests/fixtures/`, stores them, and asserts the
 analysers' numbers — the tool testing itself end to end.
+
+### Self-check (dogfooding)
+
+The tool can measure the reliability of *its own* test suite. This runs the suite,
+records the run in local history, and reports the trend across every run so far:
+
+```bash
+python scripts/self_check.py
+```
+
+Run it repeatedly to accumulate history (stored in `data/self-check.db`). Example:
+
+```
+  Reliability score
+  Suite reliability: 100%
+  ✓ Every stored test passes cleanly every time.
+
+  Reliability trend
+  ▬ STABLE   earlier 100%  →  recent 100%   (per run: 100% 100% 100%)
+```
 
 ## License
 

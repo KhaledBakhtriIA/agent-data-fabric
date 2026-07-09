@@ -53,6 +53,6 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pyright]
 # The whole package is kept strict-clean; CI and editors should enforce that.
-include = ["reliability", "tests"]
+include = ["reliability", "tests", "scripts"]
 typeCheckingMode = "strict"
 pythonVersion = "3.9"
