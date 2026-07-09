@@ -220,6 +220,20 @@ pyright                   # strict type check
 The test suite parses the fixtures in `tests/fixtures/`, stores them, and asserts the
 analysers' numbers — the tool testing itself end to end.
 
+### Project dashboard
+
+A one-glance status screen — the project banner, a snapshot of your local reliability
+history, and the commands you'll actually use:
+
+```bash
+python scripts/home.py
+```
+
+It's wired to run **automatically when you open the folder in VS Code**
+(`.vscode/tasks.json`, `runOn: folderOpen`). The first time, VS Code asks to
+_"Allow Automatic Tasks"_ — allow it (Terminal menu → Allow Automatic Tasks in Folder).
+The dashboard only reads, never writes.
+
 ### Self-check (dogfooding)
 
 The tool can measure the reliability of *its own* test suite. This runs the suite,
