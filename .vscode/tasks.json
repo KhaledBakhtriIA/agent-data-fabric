@@ -5,10 +5,10 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Project home",
-      "detail": "Show the QA Reliability Intelligence dashboard",
+      "label": "Reliability console",
+      "detail": "Open the interactive QA Reliability Intelligence console",
       "type": "shell",
-      "command": "python scripts/home.py",
+      "command": "python -m reliability",
       "runOptions": { "runOn": "folderOpen" },
       "presentation": {
         "reveal": "always",

@@ -16,6 +16,9 @@ dist/
 # Local run history — schema is versioned instead
 data/*.db
 
+# Per-target-project working dir (history DB + captured result files)
+.reliability/
+
 # Result files dropped in for ingestion (keep the folder, ignore its contents)
 data/imports/*
 !data/imports/.gitkeep
