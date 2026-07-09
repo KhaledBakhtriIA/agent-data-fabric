@@ -4,6 +4,8 @@
 > surfacing flakiness patterns and reliability trends that single-run tools can't see.
 
 <p>
+  <a href="https://github.com/KhaledBakhtriIA/agent-data-fabric/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/KhaledBakhtriIA/agent-data-fabric/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/KhaledBakhtriIA/agent-data-fabric/actions/workflows/self-check.yml"><img alt="Self-check" src="https://github.com/KhaledBakhtriIA/agent-data-fabric/actions/workflows/self-check.yml/badge.svg"></a>
   <img alt="Python" src="https://img.shields.io/badge/python-3.9%2B-blue">
   <img alt="Dependencies" src="https://img.shields.io/badge/core%20deps-0-brightgreen">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
@@ -237,6 +239,14 @@ Run it repeatedly to accumulate history (stored in `data/self-check.db`). Exampl
   Reliability trend
   ▬ STABLE   earlier 100%  →  recent 100%   (per run: 100% 100% 100%)
 ```
+
+The same self-check also runs **daily in CI** (`.github/workflows/self-check.yml`)
+to track the suite's reliability over real calendar time — a flakiness canary.
+That history is carried between the ephemeral runners with an Actions cache, and
+each run's reliability report is published to its
+[job summary](https://github.com/KhaledBakhtriIA/agent-data-fabric/actions/workflows/self-check.yml).
+You can also trigger it on demand from the Actions tab ("Run workflow"). It keeps
+its own history, separate from your local `data/self-check.db`.
 
 ## License
 
