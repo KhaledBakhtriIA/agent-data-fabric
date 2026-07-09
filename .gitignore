@@ -4,9 +4,14 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
-.pytest_cache/
 build/
 dist/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
 
 # Local run history — schema is versioned instead
 data/*.db
