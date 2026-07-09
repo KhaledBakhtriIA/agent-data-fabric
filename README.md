@@ -89,7 +89,9 @@ python -m reliability report
 
 ## Usage
 
-The tool has two verbs: **ingest** (remember a run) and **report** (analyse the history).
+Main verbs: **ingest** (remember a run), **report** (analyse the history), and **run**
+(test a target project end to end). Running `reliability` with no arguments opens an
+interactive console.
 
 ### Ingest a run
 
@@ -129,6 +131,42 @@ Example output:
   ▲ IMPROVING   earlier 75%  →  recent 88%   (+12 pts over 4 runs)
   per run (old→new): 100%  50%  75%  100%
 ```
+
+### Test any project
+
+Point the tool at a project and it runs *that project's* tests, records the run, and
+reports — no result file needed. It auto-detects **Playwright** (`playwright.config.*`)
+and **pytest**; anything else can be driven with an explicit command.
+
+```bash
+cd path/to/your/project
+reliability run                 # detect the framework, run its tests, record + report
+# ...or target it by path, or drive a custom command:
+reliability run path/to/project
+reliability run . --command "npm test" --result results/junit.xml
+```
+
+Each project keeps its own history in its own `.reliability/` folder, so reliability
+accumulates per project. (Add `.reliability/` to that project's `.gitignore`.) The bare
+`reliability` command works from any directory once you `pip install -e .`; otherwise use
+`python -m reliability` from this repo.
+
+### Interactive console
+
+`reliability` with no arguments opens a small menu that shows the target, its detected
+framework and history, and lets you run tests, view the report, or switch target:
+
+```
+  QA Reliability Intelligence — console
+  Target : /path/to/your/project
+  Tests  : pytest
+  History: 3 run(s) · reliability 100%
+
+  [r] run tests & analyse   [v] view report   [t] change target   [q] quit
+```
+
+It also opens automatically when you open the folder in VS Code — see
+[Project dashboard](#development).
 
 ## How it works
 
@@ -222,17 +260,16 @@ analysers' numbers — the tool testing itself end to end.
 
 ### Project dashboard
 
-A one-glance status screen — the project banner, a snapshot of your local reliability
-history, and the commands you'll actually use:
+Opening the folder in VS Code **pops up the interactive console** automatically
+(`.vscode/tasks.json`, `runOn: folderOpen`, running `python -m reliability`). The first
+time, VS Code asks to _"Allow Automatic Tasks"_ — allow it (Terminal menu → Allow
+Automatic Tasks in Folder).
+
+For a quick, read-only glance at your local histories without the menu:
 
 ```bash
 python scripts/home.py
 ```
-
-It's wired to run **automatically when you open the folder in VS Code**
-(`.vscode/tasks.json`, `runOn: folderOpen`). The first time, VS Code asks to
-_"Allow Automatic Tasks"_ — allow it (Terminal menu → Allow Automatic Tasks in Folder).
-The dashboard only reads, never writes.
 
 ### Self-check (dogfooding)
 
