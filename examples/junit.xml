@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Example JUnit XML result file (the format Selenium and many CI runners emit).
-  Provided as a format reference. The JUnit adapter is a stub in this phase;
-  `reliability ingest examples/junit.xml` will report "not yet implemented".
+  Example JUnit XML result file (emitted by pytest's JUnit reporter, Selenium,
+  and many CI runners). The JUnit adapter is implemented, so this ingests
+  directly:  reliability ingest examples/junit.xml
 -->
 <testsuites name="Sauce Demo" tests="3" failures="1" skipped="0" time="4.812">
   <testsuite name="LoginTests" tests="2" failures="0" skipped="0" time="2.101" timestamp="2026-07-05T09:00:00">

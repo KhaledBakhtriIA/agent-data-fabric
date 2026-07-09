@@ -189,9 +189,9 @@ produces one row, not two.
 | Capability | Status |
 |---|---|
 | Playwright JSON adapter | ✅ Implemented |
+| JUnit XML adapter (pytest, Selenium, CI runners) | ✅ Implemented |
 | Evidence store + idempotent ingest | ✅ Implemented |
 | Reliability score · flakiness · trend | ✅ Implemented |
-| JUnit XML adapter (Selenium, CI runners) | 🔜 Planned |
 | pytest-json adapter | 🔜 Planned |
 | Per-test regression alerts across runs | 🔭 Later |
 | Optional natural-language explanation layer (never required) | 🔭 Later |
