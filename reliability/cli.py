@@ -17,6 +17,7 @@ from pathlib import Path
 
 from . import storage
 from .adapters import detect_adapter, get_adapter
+from .console import interactive, run_once
 from .reports import render_report
 
 
@@ -107,6 +108,13 @@ def cmd_report(args: argparse.Namespace) -> int:
 
 
 # --------------------------------------------------------------------------- #
+# run — test a target project
+# --------------------------------------------------------------------------- #
+def cmd_run(args: argparse.Namespace) -> int:
+    return run_once(Path(args.path), command=args.command, result=args.result)
+
+
+# --------------------------------------------------------------------------- #
 # entry point
 # --------------------------------------------------------------------------- #
 def build_parser() -> argparse.ArgumentParser:
@@ -114,7 +122,8 @@ def build_parser() -> argparse.ArgumentParser:
         prog="reliability",
         description="Local-first, framework-agnostic test-reliability history.",
     )
-    sub = parser.add_subparsers(dest="command", required=True)
+    # No subcommand launches the interactive console (see main()).
+    sub = parser.add_subparsers(dest="command")
 
     p_ingest = sub.add_parser("ingest", help="normalise a result file into local history")
     p_ingest.add_argument("result_file", help="path to a test result file (e.g. report.json)")
@@ -148,6 +157,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_report.set_defaults(func=cmd_report)
 
+    p_run = sub.add_parser("run", help="run a target project's tests, record and report")
+    p_run.add_argument("path", nargs="?", default=".", help="target project directory (default: .)")
+    p_run.add_argument("--command", help='custom test command, e.g. "npm test" (needs --result)')
+    p_run.add_argument("--result", help="path to the result file your --command writes")
+    p_run.set_defaults(func=cmd_run)
+
     return parser
 
 
@@ -167,6 +182,9 @@ def main(argv: list[str] | None = None) -> int:
     _use_utf8_streams()
     parser = build_parser()
     args = parser.parse_args(argv)
+    # No subcommand → pop up the interactive console on the current directory.
+    if getattr(args, "func", None) is None:
+        return interactive(Path.cwd())
     return args.func(args)
 
 
