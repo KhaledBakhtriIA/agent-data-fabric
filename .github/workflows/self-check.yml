@@ -1,0 +1,64 @@
+name: Self-check
+
+# Track the reliability of this project's OWN test suite over real calendar
+# time. It runs on a schedule, accumulates history in an Actions cache (runners
+# are ephemeral, so the SQLite DB is carried between runs), and publishes the
+# reliability report to each run's job summary.
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # every day at 06:00 UTC
+  workflow_dispatch: {} # ...and on demand from the Actions tab
+
+permissions:
+  contents: read
+
+concurrency:
+  # Never let two scheduled runs race on the shared history cache.
+  group: self-check
+  cancel-in-progress: false
+
+jobs:
+  self-check:
+    name: Self-check reliability
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: python -m pip install -e ".[dev]"
+
+      - name: Restore accumulated reliability history
+        uses: actions/cache@v4
+        with:
+          path: data/self-check.db
+          # Unique key per run + a shared prefix: each run restores the most
+          # recent DB (via restore-keys) and saves an updated one under a new
+          # key — the standard "accumulating cache" pattern.
+          key: self-check-db-${{ github.run_id }}
+          restore-keys: |
+            self-check-db-
+
+      - name: Run the self-check (append this run, then report)
+        # A non-passing run is data, not a build break — record it and carry on.
+        continue-on-error: true
+        run: python scripts/self_check.py
+
+      - name: Publish the report to the run summary
+        if: always()
+        run: |
+          {
+            echo '## QA Reliability Intelligence — self-check'
+            echo ''
+            if [ -f data/self-check.db ]; then
+              echo '```'
+              python -m reliability report --db data/self-check.db
+              echo '```'
+            else
+              echo '_No history was recorded this run._'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
