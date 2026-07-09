@@ -11,6 +11,7 @@ statistics in analysis, and formatting in reports. Here we only wire them up.
 from __future__ import annotations
 
 import argparse
+import io
 import sys
 from pathlib import Path
 
@@ -150,7 +151,20 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _use_utf8_streams() -> None:
+    # The report uses box-drawing characters; the default Windows console is
+    # cp1252 and would otherwise raise UnicodeEncodeError. Reconfigure to UTF-8
+    # where we can (a harmless no-op on streams that don't support it).
+    for stream in (sys.stdout, sys.stderr):
+        if isinstance(stream, io.TextIOWrapper):
+            try:
+                stream.reconfigure(encoding="utf-8")
+            except (ValueError, OSError):
+                pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _use_utf8_streams()
     parser = build_parser()
     args = parser.parse_args(argv)
     return args.func(args)
