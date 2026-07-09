@@ -1,0 +1,24 @@
+{
+  // Shows the project dashboard automatically when the folder is opened.
+  // VS Code will ask to "Allow Automatic Tasks" the first time — allow it
+  // (Terminal menu → Configure Tasks / Allow Automatic Tasks in Folder).
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Project home",
+      "detail": "Show the QA Reliability Intelligence dashboard",
+      "type": "shell",
+      "command": "python scripts/home.py",
+      "runOptions": { "runOn": "folderOpen" },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true,
+        "echo": false,
+        "focus": false,
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    }
+  ]
+}
