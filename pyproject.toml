@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qa-reliability-intelligence"
+version = "0.1.0"
+description = "Local-first, framework-agnostic test-suite reliability history and analysis."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+# Core is stdlib-only on purpose: sqlite3, json, argparse, hashlib all ship
+# with Python. Nothing to install, nothing phones home.
+dependencies = []
+
+[project.optional-dependencies]
+# For running the tool's own tests. Not needed to use the tool.
+dev = ["pytest>=7"]
+
+[project.scripts]
+# Installs a `reliability` command that calls reliability.cli:main
+reliability = "reliability.cli:main"
+
+[tool.setuptools]
+packages = [
+  "reliability",
+  "reliability.adapters",
+  "reliability.analysis",
+  "reliability.storage",
+  "reliability.reports",
+  "reliability.utils",
+]
+
+[tool.setuptools.package-data]
+# The schema is loaded at runtime, so ship it inside the package.
+"reliability.storage" = ["schema.sql"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

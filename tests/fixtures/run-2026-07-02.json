@@ -1,0 +1,110 @@
+{
+  "config": {
+    "version": "1.45.0",
+    "projects": [{ "id": "chromium", "name": "chromium" }]
+  },
+  "stats": {
+    "startTime": "2026-07-02T09:00:00.000Z",
+    "duration": 11000,
+    "expected": 2,
+    "unexpected": 2,
+    "flaky": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "title": "login.spec.ts",
+      "file": "tests/login.spec.ts",
+      "specs": [
+        {
+          "title": "standard user can log in",
+          "file": "tests/login.spec.ts",
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "retry": 0, "status": "passed", "duration": 1250, "startTime": "2026-07-02T09:00:01.000Z", "attachments": [] }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "locked-out user sees error",
+          "file": "tests/login.spec.ts",
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "retry": 0, "status": "passed", "duration": 950, "startTime": "2026-07-02T09:00:03.000Z", "attachments": [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "inventory.spec.ts",
+      "file": "tests/inventory.spec.ts",
+      "suites": [
+        {
+          "title": "Inventory",
+          "file": "tests/inventory.spec.ts",
+          "specs": [
+            {
+              "title": "can add two items to cart",
+              "file": "tests/inventory.spec.ts",
+              "ok": false,
+              "tests": [
+                {
+                  "projectName": "chromium",
+                  "status": "unexpected",
+                  "results": [
+                    {
+                      "retry": 0,
+                      "status": "failed",
+                      "duration": 30000,
+                      "startTime": "2026-07-02T09:00:05.000Z",
+                      "error": { "message": "TimeoutError: locator.click: Timeout 30000ms exceeded waiting for '.shopping_cart_badge'" },
+                      "attachments": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "checkout.spec.ts",
+      "file": "tests/checkout.spec.ts",
+      "specs": [
+        {
+          "title": "complete purchase flow",
+          "file": "tests/checkout.spec.ts",
+          "ok": false,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "unexpected",
+              "results": [
+                {
+                  "retry": 0,
+                  "status": "failed",
+                  "duration": 30000,
+                  "startTime": "2026-07-02T09:00:35.000Z",
+                  "error": { "message": "Error: expect(locator).toBeVisible() failed for '.complete-header'" },
+                  "attachments": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

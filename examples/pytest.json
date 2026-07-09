@@ -1,0 +1,33 @@
+{
+  "_comment": "Example pytest-json-report output (pytest --json-report). Format reference only; the pytest adapter is a stub in this phase, so ingesting this reports 'not yet implemented'.",
+  "created": 1751706000.0,
+  "duration": 3.517,
+  "root": "/home/ci/sauce-demo",
+  "environment": { "Python": "3.11.9" },
+  "summary": { "total": 3, "passed": 2, "failed": 1, "collected": 3 },
+  "tests": [
+    {
+      "nodeid": "tests/test_login.py::test_standard_user_can_log_in",
+      "outcome": "passed",
+      "keywords": ["test_standard_user_can_log_in"],
+      "setup": { "duration": 0.001 },
+      "call": { "duration": 1.204 },
+      "teardown": { "duration": 0.0004 }
+    },
+    {
+      "nodeid": "tests/test_login.py::test_locked_out_user_sees_error",
+      "outcome": "passed",
+      "keywords": ["test_locked_out_user_sees_error"],
+      "call": { "duration": 0.902 }
+    },
+    {
+      "nodeid": "tests/test_checkout.py::test_complete_purchase_flow",
+      "outcome": "failed",
+      "keywords": ["test_complete_purchase_flow"],
+      "call": {
+        "duration": 1.411,
+        "longrepr": "AssertionError: expected '.complete-header' to be visible"
+      }
+    }
+  ]
+}

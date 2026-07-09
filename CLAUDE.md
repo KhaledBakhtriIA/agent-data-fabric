@@ -1,130 +1,165 @@
-# CLAUDE.md — QA Reliability Platform, Phase 0 (Evidence Foundation)
+# CLAUDE.md — QA Reliability Intelligence, Phase 0 (Evidence Foundation)
+
+> Direction change (2026-07-09): this project was refactored from a
+> TypeScript/Playwright-specific "platform" into a **local-first,
+> framework-agnostic reliability tool written in Python**, to match the vision
+> in `README.md`. Earlier revisions of this file mandated TypeScript,
+> `better-sqlite3`, and an LLM analysis phase — those no longer apply. The
+> README is the source of truth for *what* the tool is; this file governs *how*
+> to work in the repo.
 
 ## What this project is
 
-An AI-assisted QA reliability platform that helps QA engineers detect fragile
-locators, flaky tests, and hidden quality risks in Playwright test suites.
+A **local-first** command-line tool that tracks test-suite reliability **across
+many runs over time** — surfacing flakiness patterns and reliability trends that
+single-run tools can't see. Test data never leaves the machine.
 
 **Operating principle (never violated):**
-Observe → Analyze → Recommend → Human Decision.
-The system never modifies tests, never deploys changes, and never acts
-autonomously. A human approves every change.
+Observe → Analyse → Recommend → Human decides.
+The tool surfaces evidence and patterns; a human makes every decision. It never
+modifies tests, never generates or heals tests, never deploys, never acts
+autonomously.
 
-**Target project:** the existing Playwright + TypeScript + Page Object Model
-suite that tests Sauce Demo (https://www.saucedemo.com).
+## What makes it different (and what it deliberately is NOT)
+
+- **Local-first / private.** Runs on your machine. No cloud upload, no telemetry.
+- **Framework-agnostic.** Reads standard result files through small **adapters**
+  into one **neutral schema**, so one reliability view can span Playwright,
+  Selenium/JUnit, and pytest — not just one framework.
+- **Deterministic first.** Flakiness and trend analysis are **statistics over
+  stored history — rules and math, not a language model.** The core needs no AI.
+
+It does **not** generate tests, does **not** auto-heal or modify tests, and
+**deliberately does not compete** on single-run locator linting or flaky
+detection (Playwright's native tooling already covers those). Its reason to
+exist is the cross-run, local-first, multi-framework reliability view.
 
 ## What Phase 0 is — and is not
 
-Phase 0 builds the **evidence foundation**: after every Playwright run,
-structured data about that run is captured and stored in a local database.
-Nothing analyzes that data yet. Phase 0 is pure plumbing.
+Phase 0 builds the **evidence foundation**: normalise result files into a local
+store and accumulate run history. Collection only — analysis is thin on purpose.
 
 **In scope:**
-1. Playwright configured with the JSON reporter (in addition to HTML)
-   and trace collection on failure/retry.
-2. An **ingestion script** (TypeScript, run via `npm run ingest`) that parses
-   the JSON report after each run and writes normalized records to SQLite.
-3. The **evidence store**: a SQLite database (`evidence/qa-evidence.db`)
-   accumulating run history over time.
-4. A trivial **CLI check** (`npm run evidence:stats`) that prints how many
-   runs/tests/failures are stored — proof the pipeline works.
+1. Adapters that parse framework result files into the neutral model
+   (`reliability/adapters/`). Playwright JSON is implemented; JUnit XML and
+   pytest-json are stubbed with clear "not yet implemented" messages.
+2. The **evidence store**: local SQLite (`data/reliability.db`) accumulating
+   run history. Schema is versioned at `reliability/storage/schema.sql`.
+3. `reliability ingest <result-file>` — normalise one file into the store
+   (idempotent).
+4. `reliability report` — deterministic flakiness + reliability-trend output.
 
 **Explicitly OUT of scope (do not build, do not suggest building):**
-- Any LLM or Anthropic API call
-- Any agent, orchestrator, or "meta supervisor"
-- Locator linting, flakiness detection, or any analysis logic (Phase 1)
-- Data pipeline validation, schema validators, Kestra, Kafka (deferred)
-- Any UI beyond terminal output
-- Automatic modification of test files
+- Any LLM / Anthropic API call in the core. (An optional explanation layer may
+  come *much* later; it is not part of Phase 0 and must never be required.)
+- Test generation, auto-healing, or any modification of test files.
+- A locator/selector linter (deliberately not competing there).
+- Any cloud upload, telemetry, or network call from the tool.
+- Any UI beyond terminal output.
 
 If a task drifts toward these, stop and say so instead of building it.
 
 ## Success criteria (definition of done)
 
-Phase 0 is complete when:
-- [ ] Every `npx playwright test` run produces a JSON report and traces on failure
-- [ ] `npm run ingest` stores that run in SQLite without errors
-- [ ] Re-running ingest on the same report does NOT create duplicate records (idempotent)
-- [ ] `npm run evidence:stats` shows run count, test count, pass/fail totals
-- [ ] At least 20 real runs are accumulated in the database
-- [ ] The README documents the workflow: run tests → ingest → check stats
+- [ ] `reliability ingest` stores any Playwright JSON report without errors.
+- [ ] Re-running ingest on the same file does NOT duplicate a run (idempotent).
+- [ ] `reliability report` prints per-test flakiness and a reliability trend.
+- [ ] Adding a new framework means adding one adapter and nothing else.
+- [ ] The tool's own tests (`tests/`) pass via `pytest`.
+- [ ] README documents the workflow: run tests → ingest → report.
 
 ## Tech stack and constraints
 
-- **Language:** TypeScript only. No plain JavaScript files.
-- **Runtime:** Node.js (the version already used by the Playwright project).
-- **Database:** SQLite via `better-sqlite3`. No Postgres, no ORM, no server.
-- **Dependencies:** keep them minimal. Justify any new package before adding it.
-- **No network calls** from the ingestion script. It reads local files only.
+- **Language:** Python (>= 3.9). The tool is external and framework-neutral, so
+  it isn't tied to any test framework's language.
+- **Storage:** SQLite via the standard-library `sqlite3` module. No server, no
+  ORM, no third-party database driver.
+- **Core dependencies:** none beyond the standard library. `pytest` is a dev-only
+  dependency for the tool's tests. Justify any new package before adding it.
+- **No network calls** from the tool. It reads local files and writes a local DB.
 
 ## Project structure
 
+Pure Python. There is no Node/Playwright suite in this repo any more — result
+files are supplied as static examples/fixtures instead.
+
 ```
 project-root/
-├── tests/                  # existing Playwright specs (POM) — do not restructure
-├── pages/                  # existing Page Objects — do not restructure
-├── playwright.config.ts    # add JSON reporter + trace settings here
-├── evidence/
-│   ├── qa-evidence.db      # SQLite database (gitignored)
-│   └── schema.sql          # schema definition, versioned in git
-├── scripts/
-│   ├── ingest.ts           # parses JSON report → writes to SQLite
-│   └── stats.ts            # prints evidence store summary
-└── CLAUDE.md               # this file
+├── reliability/                # the tool (Python package)
+│   ├── __init__.py  __main__.py
+│   ├── cli.py                  # `reliability ingest` / `reliability report`
+│   ├── adapters/               # per-framework parsers → neutral model
+│   │   ├── base.py             # Adapter ABC + registry contract
+│   │   ├── playwright.py       # Playwright JSON (implemented)
+│   │   ├── junit.py            # JUnit XML (stub)
+│   │   └── pytest.py           # pytest-json (stub)
+│   ├── analysis/               # deterministic statistics (NO AI)
+│   │   ├── flakiness.py        # per-test instability over history
+│   │   ├── trends.py           # reliability trend over time
+│   │   └── reliability.py      # 0–100 reliability score per test / suite
+│   ├── storage/                # neutral model + local SQLite store
+│   │   ├── models.py           # dataclasses (Run, TestResult)
+│   │   ├── database.py         # SQLite open/insert/idempotency (stdlib sqlite3)
+│   │   └── schema.sql          # neutral evidence schema (versioned in git)
+│   ├── reports/
+│   │   └── cli_report.py       # terminal report formatting
+│   └── utils/                  # small shared helpers (e.g. text.truncate)
+├── data/
+│   ├── reliability.db          # local run history (gitignored)
+│   └── imports/                # drop-folder for result files to ingest
+├── examples/                   # one result file per format (pw json, junit, pytest)
+├── tests/                      # pytest tests for the tool (+ fixtures/)
+├── docs/                       # architecture notes
+├── pyproject.toml              # packaging + `reliability` entry point
+├── LICENSE
+└── README.md                   # product vision + workflow (source of truth)
 ```
 
-## Evidence store schema (guidance)
+## Neutral evidence schema (guidance)
 
-Three tables, normalized:
+Two tables, framework-neutral (see `reliability/storage/schema.sql`):
 
-- **runs** — one row per `npx playwright test` execution:
-  `run_id, started_at, duration_ms, playwright_version, browser_projects, git_sha (nullable), total, passed, failed, flaky, skipped`
-- **test_results** — one row per test per run:
-  `result_id, run_id (FK), test_file, test_title, project (browser), status, duration_ms, retry_count, error_message (nullable), trace_path (nullable)`
-- **attempts** (optional in Phase 0, valuable for Phase 1) — one row per retry attempt:
-  `attempt_id, result_id (FK), attempt_index, status, duration_ms, error_snippet`
+- **runs** — one row per ingested run: `run_id` (stable hash → idempotent),
+  `framework`, `started_at`, `duration_ms`, `tool_version`, `source_file`,
+  `total/passed/failed/flaky/skipped`, `ingested_at`.
+- **test_results** — one row per test per run: `run_id` (FK), `test_key` (stable
+  identity across runs), `name`, `file`, `status`, `duration_ms`, `retries`,
+  `message` (truncated).
 
 Rules:
-- Derive a stable `run_id` (hash of report start time + config) so ingestion is idempotent.
-- Store error messages truncated (first ~500 chars). Full detail lives in the trace file; store its path, not its contents.
-- Never store credentials or secrets from test output.
-
-## Playwright configuration rules
-
-- Reporters: `[['html'], ['json', { outputFile: 'test-results/report.json' }]]`
-  — keep the HTML report; the human still uses it.
-- Traces: `trace: 'on-first-retry'`, retries: 2 (so flaky patterns become visible in history).
-- Do not change existing test logic, locators, or Page Objects in Phase 0.
-  Phase 0 observes the suite as it is — including its flaws. The flaws are the data.
+- `test_key` is what correlates the same test across runs — keep it stable.
+- Truncate error messages (~500 chars). Never store credentials or secrets that
+  a test may have echoed into output.
+- Idempotency comes from a stable `run_id` derived from run-identifying fields.
 
 ## Coding conventions
 
-- Follow the existing POM structure; new code goes in `scripts/`, not `tests/`.
-- Prefer explicit types over `any`. Small pure functions over classes for scripts.
-- Every script must be runnable via an npm script (`npm run ingest`, `npm run evidence:stats`).
-- Handle the "report file missing" case with a clear error message, not a stack trace.
+- Small pure functions; dataclasses for the model. Prefer explicit types.
+- Every capability is reachable from the CLI (`reliability <verb>`).
+- Handle "file missing" / "unrecognised format" with a clear message, not a stack
+  trace.
 - Comments explain *why*, not *what*.
+- The developer is a junior QA engineer learning this stack: when introducing a
+  new concept (adapter, idempotency, neutral schema), add a 1–2 sentence
+  explanation the first time it appears.
 
 ## How Claude should work in this repo
 
-- Before writing code, restate which Phase 0 item the task belongs to.
-  If it belongs to none, flag it as out of scope.
-- Propose changes as diffs or new files; never rewrite existing test files wholesale.
-- When something is ambiguous (e.g., schema field naming), pick a reasonable
-  default, state the assumption in one line, and continue.
-- Keep explanations in plain language; define technical terms inline the first
-  time they appear.
-- The developer is a junior QA engineer learning this stack: when introducing
-  a new concept (idempotency, foreign keys, reporters), add a 1–2 sentence
-  explanation the first time it comes up.
+- Before writing code, restate which Phase 0 item the task belongs to. If it
+  belongs to none (or drifts into out-of-scope AI / test-modification), flag it.
+- Propose changes as diffs or new files; never rewrite the sample test files
+  wholesale.
+- When something is ambiguous, pick a reasonable default, state the assumption in
+  one line, and continue.
+- Keep the core deterministic and offline. If you ever think you need an LLM to
+  make Phase 0 work, you've misunderstood the design — stop and ask.
 
 ## What comes after (context only — do not build yet)
 
-- **Phase 1:** locator/test-quality linter (static rules) + flakiness detector
-  (statistics over the evidence store) + LLM analysis layer that turns findings
-  into human-readable recommendations, delivered via CLI.
-- **Phase 2:** browser observation (DOM inspection, trace analysis), richer
-  correlation across findings.
-- **Phase 3 (only if a real need emerges):** data quality branch, coordination layer.
+- **Phase 1:** more adapters (JUnit XML, pytest-json) and richer deterministic
+  analysis (per-test reliability scores, regression alerts across runs).
+- **Phase 2:** correlation across findings; optional trace/artefact summarisation.
+- **Optional, much later:** a *non-required* natural-language explanation layer
+  over the deterministic findings. The core must always work without it.
 
-Every phase keeps the same rule: the system recommends; the human decides.
+Every phase keeps the same rule: the tool recommends; the human decides.

@@ -1,9 +1,16 @@
-node_modules/
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+build/
 dist/
 
-# Evidence database is local — schema.sql is versioned instead
-evidence/qa-evidence.db
+# Local run history — schema is versioned instead
+data/*.db
 
-# Playwright output (regenerated each run)
-test-results/
-playwright-report/
+# Result files dropped in for ingestion (keep the folder, ignore its contents)
+data/imports/*
+!data/imports/.gitkeep

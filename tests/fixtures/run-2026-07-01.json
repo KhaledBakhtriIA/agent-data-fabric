@@ -1,0 +1,96 @@
+{
+  "config": {
+    "version": "1.45.0",
+    "projects": [{ "id": "chromium", "name": "chromium" }]
+  },
+  "stats": {
+    "startTime": "2026-07-01T09:00:00.000Z",
+    "duration": 9000,
+    "expected": 4,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "title": "login.spec.ts",
+      "file": "tests/login.spec.ts",
+      "specs": [
+        {
+          "title": "standard user can log in",
+          "file": "tests/login.spec.ts",
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "retry": 0, "status": "passed", "duration": 1200, "startTime": "2026-07-01T09:00:01.000Z", "attachments": [] }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "locked-out user sees error",
+          "file": "tests/login.spec.ts",
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "retry": 0, "status": "passed", "duration": 900, "startTime": "2026-07-01T09:00:03.000Z", "attachments": [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "inventory.spec.ts",
+      "file": "tests/inventory.spec.ts",
+      "suites": [
+        {
+          "title": "Inventory",
+          "file": "tests/inventory.spec.ts",
+          "specs": [
+            {
+              "title": "can add two items to cart",
+              "file": "tests/inventory.spec.ts",
+              "ok": true,
+              "tests": [
+                {
+                  "projectName": "chromium",
+                  "status": "expected",
+                  "results": [
+                    { "retry": 0, "status": "passed", "duration": 1500, "startTime": "2026-07-01T09:00:05.000Z", "attachments": [] }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "checkout.spec.ts",
+      "file": "tests/checkout.spec.ts",
+      "specs": [
+        {
+          "title": "complete purchase flow",
+          "file": "tests/checkout.spec.ts",
+          "ok": true,
+          "tests": [
+            {
+              "projectName": "chromium",
+              "status": "expected",
+              "results": [
+                { "retry": 0, "status": "passed", "duration": 2200, "startTime": "2026-07-01T09:00:07.000Z", "attachments": [] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Example JUnit XML result file (the format Selenium and many CI runners emit).
+  Provided as a format reference. The JUnit adapter is a stub in this phase;
+  `reliability ingest examples/junit.xml` will report "not yet implemented".
+-->
+<testsuites name="Sauce Demo" tests="3" failures="1" skipped="0" time="4.812">
+  <testsuite name="LoginTests" tests="2" failures="0" skipped="0" time="2.101" timestamp="2026-07-05T09:00:00">
+    <testcase classname="LoginTests" name="standard user can log in" time="1.203"/>
+    <testcase classname="LoginTests" name="locked-out user sees error" time="0.898"/>
+  </testsuite>
+  <testsuite name="CheckoutTests" tests="1" failures="1" skipped="0" time="2.711" timestamp="2026-07-05T09:00:03">
+    <testcase classname="CheckoutTests" name="complete purchase flow" time="2.711">
+      <failure message="element not found: .complete-header" type="NoSuchElementException">
+        NoSuchElementException: Unable to locate element: .complete-header
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>
