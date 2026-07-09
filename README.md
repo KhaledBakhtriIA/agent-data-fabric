@@ -73,7 +73,7 @@ multi-framework reliability view those tools don't provide.
 
 ```bash
 # 1. Get the code
-git clone https://github.com/<your-account>/agent-data-fabric.git
+git clone https://github.com/KhaledBakhtriIA/agent-data-fabric.git
 cd agent-data-fabric
 
 # 2. (optional) install the `reliability` command
@@ -170,19 +170,23 @@ It also opens automatically when you open the folder in VS Code — see
 
 ## How it works
 
-A straight pipeline. Each stage has one job and only speaks the neutral model to its neighbours.
+Two ways in — **`run`** a target project (the tool executes its tests to produce a
+result file) or **`ingest`** a result file you already have — both feed one pipeline
+where each stage only speaks the neutral model to its neighbours.
 
 ```
-Test runs (any framework)
-        │   result files: Playwright JSON, JUnit XML, pytest JSON
-        ▼
+  reliability run <project>              reliability ingest <file>
+        │  (runs the target's tests)              │
+        ▼                                          ▼
+        result file  (Playwright JSON · JUnit XML · …)
+                          ▼
    Adapter  ── normalises into one neutral schema
-        ▼
+                          ▼
  Evidence store (local SQLite)  ── accumulates run history over time
-        ▼
+                          ▼
  Analysers (statistics, no AI)  ── reliability score · flakiness · trend
-        ▼
-   CLI report  ── you read it, you decide
+                          ▼
+   CLI report / console  ── you read it, you decide
 ```
 
 See [`docs/architecture.md`](docs/architecture.md) for the detailed breakdown.
@@ -192,24 +196,30 @@ See [`docs/architecture.md`](docs/architecture.md) for the detailed breakdown.
 ```
 .
 ├── reliability/            # the tool (Python package, stdlib only)
-│   ├── cli.py              # `reliability ingest` / `reliability report`
-│   ├── adapters/           # per-framework parsers → neutral model
-│   │   ├── playwright.py   #   implemented
-│   │   ├── junit.py        #   stub (planned)
-│   │   └── pytest.py       #   stub (planned)
+│   ├── cli.py              # ingest · report · run · (bare = interactive console)
+│   ├── console.py          # run_once(target) + the interactive menu
+│   ├── runners.py          # detect a target project's framework & test command
+│   ├── adapters/           # per-framework result parsers → neutral model
+│   │   ├── playwright.py   #   Playwright JSON  — implemented
+│   │   ├── junit.py        #   JUnit XML        — implemented
+│   │   └── pytest.py       #   pytest-json      — stub (planned)
 │   ├── analysis/           # deterministic statistics (no AI)
 │   │   ├── flakiness.py    #   which tests flip between pass/fail
 │   │   ├── trends.py       #   is the suite improving or declining
 │   │   └── reliability.py  #   a 0–100 score per test and per suite
 │   ├── storage/            # neutral model + local SQLite store
 │   │   ├── models.py · database.py · schema.sql
-│   ├── reports/            # terminal report formatting
-│   └── utils/
+│   ├── reports/            # terminal report formatting (cli_report.py)
+│   └── utils/              # small shared helpers (text.truncate)
+├── scripts/                # self_check.py (dogfood) · home.py (quick dashboard)
 ├── data/                   # local history (reliability.db) + imports/ drop-folder
 ├── examples/               # one result file per format (playwright, junit, pytest)
 ├── tests/                  # pytest suite + fixtures
-└── docs/                   # architecture notes
+├── docs/                   # architecture notes
+└── .github/workflows/      # CI (lint · types · tests) + scheduled self-check
 ```
+
+Each *target* project you `run` also gets its own `.reliability/history.db` (gitignored).
 
 ## The evidence model
 
@@ -232,6 +242,8 @@ produces one row, not two.
 | JUnit XML adapter (pytest, Selenium, CI runners) | ✅ Implemented |
 | Evidence store + idempotent ingest | ✅ Implemented |
 | Reliability score · flakiness · trend | ✅ Implemented |
+| Run any project (auto-detect Playwright/pytest) + interactive console | ✅ Implemented |
+| CI + daily scheduled self-check | ✅ Implemented |
 | pytest-json adapter | 🔜 Planned |
 | Per-test regression alerts across runs | 🔭 Later |
 | Optional natural-language explanation layer (never required) | 🔭 Later |
