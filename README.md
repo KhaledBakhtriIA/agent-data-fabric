@@ -165,6 +165,8 @@ framework and history, and lets you run tests, view the report, or switch target
   [r] run tests & analyse   [v] view report   [t] change target   [q] quit
 ```
 
+**Open it without VS Code** — double-click **`console.bat`** (Windows) or run
+**`./console.sh`** (macOS/Linux) and the console pops up in its own terminal window.
 It also opens automatically when you open the folder in VS Code — see
 [Project dashboard](#development).
 
