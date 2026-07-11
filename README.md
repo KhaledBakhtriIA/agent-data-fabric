@@ -250,6 +250,25 @@ produces one row, not two.
 | Per-test regression alerts across runs | 🔭 Later |
 | Optional natural-language explanation layer (never required) | 🔭 Later |
 
+## Used in production
+
+**[⚡ The Volt System](https://github.com/KhaledBakhtriIA/the_volt)** — an autonomous,
+agent-based quantitative trading platform (companion project) — runs this tool over its
+190-test suite on **every CI run**: pytest emits JUnit XML, the run is ingested into a
+history DB cached across CI runs, and the flakiness/trend report prints in the pipeline.
+Locally it's one command from the Volt repo: `make reliability`.
+
+```yaml
+# .github/workflows/ci.yml (the_volt) — the integration in full
+- run: pytest tests -q --junitxml=test-results/junit.xml
+- uses: actions/cache@v4
+  with: { path: .reliability, key: reliability-${{ github.run_id }}, restore-keys: reliability- }
+- run: |
+    pip install git+https://github.com/KhaledBakhtriIA/agent-data-fabric.git
+    reliability ingest test-results/junit.xml --db .reliability/history.db
+    reliability report --db .reliability/history.db
+```
+
 ## Design principles
 
 **Operating principle (never violated):** Observe → Analyse → Recommend → **Human decides.**
